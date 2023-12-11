@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Giovanni Lunetta and Alex Pugh">
+
+<title>UConn Men’s Hockey Data Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="presentation_write_up_files/libs/clipboard/clipboard.min.js"></script>
+<script src="presentation_write_up_files/libs/quarto-html/quarto.js"></script>
+<script src="presentation_write_up_files/libs/quarto-html/popper.min.js"></script>
+<script src="presentation_write_up_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="presentation_write_up_files/libs/quarto-html/anchor.min.js"></script>
+<link href="presentation_write_up_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="presentation_write_up_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="presentation_write_up_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="presentation_write_up_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="presentation_write_up_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">UConn Men’s Hockey Data Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Giovanni Lunetta and Alex Pugh </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="abstract" class="level2">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
+<p>This study focuses on examining the relationship between power play performance and game outcomes for the UConn Men’s Hockey Team across the 2019-2020 to 2021-2022 seasons. By analyzing data from 127 games, we investigate various metrics such as power play efficiency, faceoff success, zone possession percentages, and shot/goal distribution during power plays. This approach aims to provide insights into the strategic aspects of power play that most significantly impact winning games.</p>
+</section>
+<section id="goalmotivation" class="level2">
+<h2 class="anchored" data-anchor-id="goalmotivation">Goal/Motivation</h2>
+<p>The primary goal of this analysis is to determine how different aspects of power play performance correlate with the team’s success in winning games. By understanding these relationships, the team can focus on specific areas of improvement during power plays. Additionally, this analysis seeks to provide a comprehensive view of the team’s power play strategies and their effectiveness, thereby aiding in tactical decision-making.</p>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<p>The primary analytical technique employed in this study is logistic regression, chosen for its suitability in modeling binary outcomes, in this case, the win/loss record of the UConn Men’s Hockey Team. The logistic regression model will incorporate a range of predictors related to power play performance, including scores on power plays, faceoff success rates, and shot/goal distribution. These predictors are selected based on their potential influence on game outcomes. The model will also account for variables like home advantage and opponent strength. The focus here is on the statistical approach and model specification rather than the dataset specifics, which are detailed in the “Data” section.</p>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The dataset for this analysis includes detailed game metrics from 127 games spanning the 2019-2020 to 2021-2022 seasons. However, 18 games were excluded from the analysis for the following reasons:</p>
+<ul>
+<li>11 games were removed because there were no powerplay faceoffs taken in the OZ during those games.</li>
+<li>3 games were removed because there was no possession in the DZ during the powerplay.</li>
+<li>1 game was removed because there was no possession in the OZ or the NZ during the powerplay.</li>
+<li>2 games were removed due to data inconsistencies causing the possession percentage in the OZ to exceed 100% of the total elapsed time, which is not possible.</li>
+</ul>
+<p>Our justification for removing these columns is as follows:</p>
+<p>Our dataset differentiates between a 0% faceoff win rate in the offensive zone (which implies faceoffs occurred in that zone) and a ‘-’ symbol, which indicates that no faceoffs took place in the offensive zone (this is the same for possession columns as well). It was deemed impractical to include these games, as this would distort the analysis of power play effectiveness. This reasoning is the same for the games with no possession in the DZ or OZ/NZ. The two games with possession percentages exceeding 100% were removed because this is not possible, and the data was likely entered incorrectly.</p>
+<p>The remaining dataset and data we will use for our analysis is 110 games and 39 variables (or predictors). The variables are as follows:</p>
+<p>Note: All variables are specifically during power plays unless otherwise stated.</p>
+<ul>
+<li><code>Date</code> - The date the game was played</li>
+<li><code>Opponent</code> - The opponent UConn played</li>
+<li><code>Team_Total_UConn Score</code> - The total number of goals UConn scored</li>
+<li><code>Team_Total_Opponent Score</code> - The total number of goals the opponent scored</li>
+<li><code>Home</code> - Whether the game was played at home or away (1 = Home, 0 = Away)</li>
+<li><code>Win</code> - Whether UConn won the game (1 = Win, 0 = Loss)</li>
+<li><code>Team_Score_On_PP</code> - Whether UConn scored on the power play (1 = Score, 0 = No Score)</li>
+<li><code>Team_PP_Faceoffs won in OZ, %</code> - The percentage of faceoffs won in the offensive zone</li>
+<li><code>Team_PP_Faceoffs won, %</code> - The percentage of faceoffs won</li>
+<li><code>Team_Shots_OT_Behind_Net</code> - The number of shots taken behind the net that were on target</li>
+<li><code>Team_Shots_Behind_Net</code> - The number of shots taken behind the net</li>
+<li><code>Team_Goals_Behind_Net</code> - The number of goals scored behind the net</li>
+<li><code>Team_Shots_OT_at_Net</code> - The number of shots taken at the net that were on target</li>
+<li><code>Team_Shots_at_Net</code> - The number of shots taken at the net</li>
+<li><code>Team_Goals_at_Net</code> - The number of goals scored at the net</li>
+<li><code>Team_Shots_OT_Left_Close</code> - The number of shots taken on the left side of the net that were on target</li>
+<li><code>Team_Shots_Left_Close</code> - The number of shots taken on the left side of the net</li>
+<li><code>Team_Goals_Left_Close</code> - The number of goals scored on the left side of the net</li>
+<li><code>Team_Shots_OT_Center_Close</code> - The number of shots taken in the center of the net that were on target</li>
+<li><code>Team_Shots_Center_Close</code> - The number of shots taken in the center of the net</li>
+<li><code>Team_Goals_Center_Close</code> - The number of goals scored in the center of the net</li>
+<li><code>Team_Shots_OT_Right_Close</code> - The number of shots taken on the right side of the net that were on target</li>
+<li><code>Team_Shots_Right_Close</code> - The number of shots taken on the right side of the net</li>
+<li><code>Team_Goals_Right_Close</code> - The number of goals scored on the right side of the net</li>
+<li><code>Team_Shots_OT_Left_Far</code> - The number of shots taken on the left side of the net that were on target</li>
+<li><code>Team_Shots_Left_Far</code> - The number of shots taken on the left side of the net</li>
+<li><code>Team_Goals_Left_Far</code> - The number of goals scored on the left side of the net</li>
+<li><code>Team_Shots_OT_Center_Far</code> - The number of shots taken in the center of the net that were on target</li>
+<li><code>Team_Shots_Center_Far</code> - The number of shots taken in the center of the net</li>
+<li><code>Team_Goals_Center_Far</code> - The number of goals scored in the center of the net</li>
+<li><code>Team_Shots_OT_Right_Far</code> - The number of shots taken on the right side of the net that were on target</li>
+<li><code>Team_Shots_Right_Far</code> - The number of shots taken on the right side of the net</li>
+<li><code>Team_Goals_Right_Far</code> - The number of goals scored on the right side of the net</li>
+<li><code>Team_Shots_OT_Not_in_Offensive_Zone</code> - The number of shots taken that were on target but not in the offensive zone</li>
+<li><code>Team_Shots_Not_in_Offensive_Zone</code> - The number of shots taken that were not in the offensive zone</li>
+<li><code>Team_Goals_Not_in_Offensive_Zone</code> - The number of goals scored that were not in the offensive zone</li>
+<li><code>Team_PP_OZ possession, %</code> - The percentage of time UConn had possession in the offensive zone</li>
+<li><code>Team_PP_NZ possession, %</code> - The percentage of time UConn had possession in the neutral zone</li>
+<li><code>Team_PP_DZ possession, %</code> - The percentage of time UConn had possession in the defensive zone</li>
+</ul>
+</section>
+<section id="analysis" class="level2">
+<h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
+<p>Lets start by getting a look at the data. We can sample 5 of the games:</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'/Users/giovanni-lunetta/uconn_masters/hockey/final_data.csv'</span>, low_memory<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="va">None</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>df.sample(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Date</th>
+      <th>Opponent</th>
+      <th>Team_Total_UConn_Score</th>
+      <th>Team_Total_Opponent_Score</th>
+      <th>Home</th>
+      <th>Win</th>
+      <th>Team_Score_On_PP</th>
+      <th>Team_PP_Faceoffs_won_in_OZ_percent</th>
+      <th>Team_PP_Faceoffs_won_percent</th>
+      <th>Team_Shots_OT_Behind_Net</th>
+      <th>Team_Shots_Behind_Net</th>
+      <th>Team_Goals_Behind_Net</th>
+      <th>Team_Shots_OT_at_Net</th>
+      <th>Team_Shots_at_Net</th>
+      <th>Team_Goals_at_Net</th>
+      <th>Team_Shots_OT_Left_Close</th>
+      <th>Team_Shots_Left_Close</th>
+      <th>Team_Goals_Left_Close</th>
+      <th>Team_Shots_OT_Center_Close</th>
+      <th>Team_Shots_Center_Close</th>
+      <th>Team_Goals_Center_Close</th>
+      <th>Team_Shots_OT_Right_Close</th>
+      <th>Team_Shots_Right_Close</th>
+      <th>Team_Goals_Right_Close</th>
+      <th>Team_Shots_OT_Left_Far</th>
+      <th>Team_Shots_Left_Far</th>
+      <th>Team_Goals_Left_Far</th>
+      <th>Team_Shots_OT_Center_Far</th>
+      <th>Team_Shots_Center_Far</th>
+      <th>Team_Goals_Center_Far</th>
+      <th>Team_Shots_OT_Right_Far</th>
+      <th>Team_Shots_Right_Far</th>
+      <th>Team_Goals_Right_Far</th>
+      <th>Team_Shots_OT_Not_in_Offensive_Zone</th>
+      <th>Team_Shots_Not_in_Offensive_Zone</th>
+      <th>Team_Goals_Not_in_Offensive_Zone</th>
+      <th>Team_PP_OZ_possession_percent</th>
+      <th>Team_PP_NZ_possession_percent</th>
+      <th>Team_PP_DZ_possession_percent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>23</th>
+      <td>2022-10-27</td>
+      <td>Boston College Eagles</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>60.0</td>
+      <td>57.1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>55.31</td>
+      <td>10.26</td>
+      <td>14.29</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>2021-02-09</td>
+      <td>UMass-Lowell River Hawks</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>50.0</td>
+      <td>50.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+      <td>2</td>
+      <td>5</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>58.61</td>
+      <td>9.17</td>
+      <td>14.72</td>
+    </tr>
+    <tr>
+      <th>62</th>
+      <td>2021-02-20</td>
+      <td>Boston University Terriers</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>66.7</td>
+      <td>75.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>39.81</td>
+      <td>8.53</td>
+      <td>20.62</td>
+    </tr>
+    <tr>
+      <th>90</th>
+      <td>2020-01-26</td>
+      <td>Yale Bulldogs</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>25.0</td>
+      <td>40.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>82.50</td>
+      <td>24.17</td>
+      <td>17.50</td>
+    </tr>
+    <tr>
+      <th>49</th>
+      <td>2021-11-21</td>
+      <td>UMass-Lowell River Hawks</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>57.1</td>
+      <td>66.7</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>37.12</td>
+      <td>11.73</td>
+      <td>20.19</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>As well as look at the summary statistics for each variable:</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df.describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Team_Total_UConn_Score</th>
+      <th>Team_Total_Opponent_Score</th>
+      <th>Home</th>
+      <th>Win</th>
+      <th>Team_Score_On_PP</th>
+      <th>Team_PP_Faceoffs_won_in_OZ_percent</th>
+      <th>Team_PP_Faceoffs_won_percent</th>
+      <th>Team_Shots_OT_Behind_Net</th>
+      <th>Team_Shots_Behind_Net</th>
+      <th>Team_Goals_Behind_Net</th>
+      <th>Team_Shots_OT_at_Net</th>
+      <th>Team_Shots_at_Net</th>
+      <th>Team_Goals_at_Net</th>
+      <th>Team_Shots_OT_Left_Close</th>
+      <th>Team_Shots_Left_Close</th>
+      <th>Team_Goals_Left_Close</th>
+      <th>Team_Shots_OT_Center_Close</th>
+      <th>Team_Shots_Center_Close</th>
+      <th>Team_Goals_Center_Close</th>
+      <th>Team_Shots_OT_Right_Close</th>
+      <th>Team_Shots_Right_Close</th>
+      <th>Team_Goals_Right_Close</th>
+      <th>Team_Shots_OT_Left_Far</th>
+      <th>Team_Shots_Left_Far</th>
+      <th>Team_Goals_Left_Far</th>
+      <th>Team_Shots_OT_Center_Far</th>
+      <th>Team_Shots_Center_Far</th>
+      <th>Team_Goals_Center_Far</th>
+      <th>Team_Shots_OT_Right_Far</th>
+      <th>Team_Shots_Right_Far</th>
+      <th>Team_Goals_Right_Far</th>
+      <th>Team_Shots_OT_Not_in_Offensive_Zone</th>
+      <th>Team_Shots_Not_in_Offensive_Zone</th>
+      <th>Team_Goals_Not_in_Offensive_Zone</th>
+      <th>Team_PP_OZ_possession_percent</th>
+      <th>Team_PP_NZ_possession_percent</th>
+      <th>Team_PP_DZ_possession_percent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.00000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.0</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.00000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.0</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+      <td>110.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>3.127273</td>
+      <td>2.827273</td>
+      <td>0.481818</td>
+      <td>0.554545</td>
+      <td>0.40000</td>
+      <td>59.192727</td>
+      <td>59.770909</td>
+      <td>0.018182</td>
+      <td>0.018182</td>
+      <td>0.0</td>
+      <td>1.136364</td>
+      <td>1.454545</td>
+      <td>0.327273</td>
+      <td>0.700000</td>
+      <td>1.354545</td>
+      <td>0.027273</td>
+      <td>1.154545</td>
+      <td>2.181818</td>
+      <td>0.145455</td>
+      <td>0.727273</td>
+      <td>1.290909</td>
+      <td>0.009091</td>
+      <td>0.30000</td>
+      <td>0.672727</td>
+      <td>0.009091</td>
+      <td>0.800000</td>
+      <td>2.172727</td>
+      <td>0.027273</td>
+      <td>0.336364</td>
+      <td>0.763636</td>
+      <td>0.009091</td>
+      <td>0.045455</td>
+      <td>0.054545</td>
+      <td>0.0</td>
+      <td>53.706000</td>
+      <td>9.161909</td>
+      <td>14.732000</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>1.877482</td>
+      <td>1.630327</td>
+      <td>0.501956</td>
+      <td>0.499291</td>
+      <td>0.49214</td>
+      <td>20.064313</td>
+      <td>18.401767</td>
+      <td>0.134220</td>
+      <td>0.134220</td>
+      <td>0.0</td>
+      <td>1.252354</td>
+      <td>1.481608</td>
+      <td>0.636923</td>
+      <td>0.893914</td>
+      <td>1.154062</td>
+      <td>0.163622</td>
+      <td>1.110305</td>
+      <td>1.813213</td>
+      <td>0.402660</td>
+      <td>0.907755</td>
+      <td>1.175791</td>
+      <td>0.095346</td>
+      <td>0.58341</td>
+      <td>0.879002</td>
+      <td>0.095346</td>
+      <td>0.926669</td>
+      <td>1.924535</td>
+      <td>0.163622</td>
+      <td>0.609967</td>
+      <td>0.966667</td>
+      <td>0.095346</td>
+      <td>0.209252</td>
+      <td>0.228130</td>
+      <td>0.0</td>
+      <td>12.934222</td>
+      <td>4.289807</td>
+      <td>5.996944</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>16.700000</td>
+      <td>16.700000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>26.050000</td>
+      <td>1.800000</td>
+      <td>4.330000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>2.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>50.000000</td>
+      <td>50.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>44.567500</td>
+      <td>6.270000</td>
+      <td>11.137500</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>3.000000</td>
+      <td>3.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.00000</td>
+      <td>60.000000</td>
+      <td>60.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>53.275000</td>
+      <td>8.425000</td>
+      <td>14.170000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.00000</td>
+      <td>71.400000</td>
+      <td>75.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>0.750000</td>
+      <td>1.000000</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>2.000000</td>
+      <td>3.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>2.000000</td>
+      <td>0.000000</td>
+      <td>0.00000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>3.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>60.345000</td>
+      <td>10.970000</td>
+      <td>17.150000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>8.000000</td>
+      <td>7.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.00000</td>
+      <td>100.000000</td>
+      <td>100.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.0</td>
+      <td>5.000000</td>
+      <td>6.000000</td>
+      <td>3.000000</td>
+      <td>3.000000</td>
+      <td>4.000000</td>
+      <td>1.000000</td>
+      <td>5.000000</td>
+      <td>8.000000</td>
+      <td>2.000000</td>
+      <td>4.000000</td>
+      <td>4.000000</td>
+      <td>1.000000</td>
+      <td>2.00000</td>
+      <td>4.000000</td>
+      <td>1.000000</td>
+      <td>4.000000</td>
+      <td>8.000000</td>
+      <td>1.000000</td>
+      <td>2.000000</td>
+      <td>4.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.0</td>
+      <td>97.890000</td>
+      <td>25.000000</td>
+      <td>44.510000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="analysis-cont." class="level2">
+<h2 class="anchored" data-anchor-id="analysis-cont.">Analysis (cont.)</h2>
+<p>We can also visualize the distribution of our dependent variable, <code>win</code>.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the distribution of the dependent variable 'Win'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sns.countplot(x<span class="op">=</span><span class="st">'Win'</span>, data<span class="op">=</span>df)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribution of Wins'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Win (0 = Loss, 1 = Win)'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Count'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="presentation_write_up_files/figure-html/cell-4-output-1.png" width="659" height="449"></p>
+</div>
+</div>
+</section>
+<section id="analysis-cont.-1" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-cont.-1">Analysis (cont.)</h2>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Removing the duplicate column 'Team_Shots_Behind_Net'</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(<span class="st">'Team_Shots_Behind_Net'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Checking for columns that have all zeros</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>columns_all_zeros <span class="op">=</span> df.columns[(df <span class="op">==</span> <span class="dv">0</span>).<span class="bu">all</span>()]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>columns_all_zeros</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Dropping columns with all zeros</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>columns_all_zeros)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Dropping non-numeric columns for simplicity</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">'Date'</span>, <span class="st">'Opponent'</span>])</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">'Team_Total_UConn_Score'</span>, <span class="st">'Team_Total_Opponent_Score'</span>])</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">'Team_Shots_OT_Behind_Net'</span>])</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">'Team_PP_Faceoffs_won_in_OZ_percent'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After some preprocessing we can run the logistic regression model:</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining all column names with '+' except 'Win', 'Date', and 'Opponent'</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>formula <span class="op">=</span> <span class="st">'Win ~ '</span> <span class="op">+</span> <span class="st">' + '</span>.join(df.columns.drop(<span class="st">'Win'</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Fitting the logistic regression model using smf.logit</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>logit_model <span class="op">=</span> smf.logit(formula<span class="op">=</span>formula, data<span class="op">=</span>df).fit()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Displaying the summary of the model</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>logit_model_summary <span class="op">=</span> logit_model.summary()</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(logit_model_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Warning: Maximum number of iterations has been exceeded.
+         Current function value: 0.501595
+         Iterations: 35
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:                    Win   No. Observations:                  110
+Model:                          Logit   Df Residuals:                       80
+Method:                           MLE   Df Model:                           29
+Date:                Mon, 11 Dec 2023   Pseudo R-squ.:                  0.2701
+Time:                        13:38:22   Log-Likelihood:                -55.175
+converged:                      False   LL-Null:                       -75.590
+Covariance Type:            nonrobust   LLR p-value:                   0.07126
+=======================================================================================================
+                                          coef    std err          z      P&gt;|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------------
+Intercept                              -4.0347      1.819     -2.218      0.027      -7.600      -0.469
+Home                                    0.2455      0.538      0.456      0.648      -0.809       1.300
+Team_Score_On_PP                       -0.7143      0.877     -0.815      0.415      -2.433       1.004
+Team_PP_Faceoffs_won_percent            0.0324      0.015      2.197      0.028       0.004       0.061
+Team_Shots_OT_at_Net                    1.0630      0.687      1.548      0.122      -0.283       2.409
+Team_Shots_at_Net                      -0.4428      0.550     -0.804      0.421      -1.522       0.636
+Team_Goals_at_Net                       0.2230      0.665      0.335      0.737      -1.080       1.526
+Team_Shots_OT_Left_Close                0.7856      0.478      1.643      0.100      -0.151       1.723
+Team_Shots_Left_Close                  -0.4516      0.383     -1.180      0.238      -1.202       0.299
+Team_Goals_Left_Close                   1.7281      1.727      1.001      0.317      -1.657       5.113
+Team_Shots_OT_Center_Close             -0.1511      0.345     -0.438      0.661      -0.827       0.525
+Team_Shots_Center_Close                -0.2721      0.216     -1.258      0.208      -0.696       0.152
+Team_Goals_Center_Close                 1.3111      0.847      1.548      0.122      -0.349       2.972
+Team_Shots_OT_Right_Close               0.5649      0.457      1.236      0.216      -0.331       1.461
+Team_Shots_Right_Close                  0.0174      0.369      0.047      0.962      -0.707       0.742
+Team_Goals_Right_Close                -35.4667   5.56e+07  -6.38e-07      1.000   -1.09e+08    1.09e+08
+Team_Shots_OT_Left_Far                  0.2178      0.760      0.286      0.775      -1.272       1.708
+Team_Shots_Left_Far                     0.0757      0.472      0.160      0.873      -0.850       1.002
+Team_Goals_Left_Far                    36.5677   6.71e+07   5.45e-07      1.000   -1.32e+08    1.32e+08
+Team_Shots_OT_Center_Far               -0.0457      0.446     -0.102      0.918      -0.920       0.828
+Team_Shots_Center_Far                  -0.2383      0.212     -1.122      0.262      -0.655       0.178
+Team_Goals_Center_Far                  25.9586   4.65e+04      0.001      1.000    -9.1e+04    9.11e+04
+Team_Shots_OT_Right_Far                 0.3775      0.706      0.535      0.593      -1.007       1.762
+Team_Shots_Right_Far                   -0.3988      0.457     -0.872      0.383      -1.295       0.497
+Team_Goals_Right_Far                  -37.0806   5.56e+07  -6.67e-07      1.000   -1.09e+08    1.09e+08
+Team_Shots_OT_Not_in_Offensive_Zone    16.8973   2493.072      0.007      0.995   -4869.435    4903.229
+Team_Shots_Not_in_Offensive_Zone      -15.1358   2493.072     -0.006      0.995   -4901.467    4871.196
+Team_PP_OZ_possession_percent           0.0408      0.020      2.046      0.041       0.002       0.080
+Team_PP_NZ_possession_percent          -0.1577      0.083     -1.890      0.059      -0.321       0.006
+Team_PP_DZ_possession_percent           0.1228      0.064      1.930      0.054      -0.002       0.248
+=======================================================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/giovanni-lunetta/Library/Python/3.10/lib/python/site-packages/statsmodels/base/model.py:607: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals
+  warnings.warn("Maximum Likelihood optimization failed to "</code></pre>
+</div>
+</div>
+</section>
+<section id="analysis-cont.-2" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-cont.-2">Analysis (cont.)</h2>
+<p>Before commenting on the results, we can confirm that the underlying assumptions are not violated by checking residuals and multicollinearity Because games deemed to be “outliers” can still be useful in our analysis, we will not remove any data points. We also do not check for independence as this is satisfied by the nature of the data.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>residuals <span class="op">=</span> logit_model.resid_generalized</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plt.hist(residuals, bins<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<pre><code>(array([ 4.,  2.,  3.,  3.,  7.,  7.,  3.,  6.,  7.,  4., 11., 11.,  9.,
+         8.,  5.,  9.,  3.,  3.,  3.,  2.]),
+ array([-0.88656364, -0.79971038, -0.71285711, -0.62600385, -0.53915058,
+        -0.45229731, -0.36544405, -0.27859078, -0.19173752, -0.10488425,
+        -0.01803098,  0.06882228,  0.15567555,  0.24252881,  0.32938208,
+         0.41623535,  0.50308861,  0.58994188,  0.67679514,  0.76364841,
+         0.85050168]),
+ &lt;BarContainer object of 20 artists&gt;)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="presentation_write_up_files/figure-html/cell-7-output-2.png" width="566" height="411"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.outliers_influence <span class="im">import</span> variance_inflation_factor</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting only the independent variables</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.drop(<span class="st">'Win'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculating VIF for each feature</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>vif_data <span class="op">=</span> pd.DataFrame()</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>vif_data[<span class="st">'feature'</span>] <span class="op">=</span> X.columns</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>vif_data[<span class="st">'VIF'</span>] <span class="op">=</span> [variance_inflation_factor(X.values, i) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(X.columns))]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>vif_data.sort_values(by<span class="op">=</span><span class="st">'VIF'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">'Team_Shots_OT_at_Net'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The residuals are normally distributed, and the only variable of concern in terms of multicollinearity is <code>Team_Shots_OT_at_Net</code> which we removed. This variable is intuitively highly correlated with ‘Team_Shots_at_Net’ as a very high proportion of shots at the net are on target. This is confirmed by the VIF values, which were both near 20 before dropping this variable.</p>
+<p>We also saw that the model was not able to converge, which is likely due to the fact that some variables have very large coefficients, most likely due to their high variability where the model is unable to converge to a solution. We drop these columns as well.</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">'Team_Goals_Right_Close'</span>, <span class="st">'Team_Goals_Left_Far'</span>, <span class="st">'Team_Goals_Center_Far'</span>, <span class="st">'Team_Goals_Right_Far'</span>, <span class="st">'Team_Shots_OT_Not_in_Offensive_Zone'</span>, <span class="st">'Team_Shots_Not_in_Offensive_Zone'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="analysis-cont.-3" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-cont.-3">Analysis (cont.)</h2>
+<p>Now we can rerun the model and look at performance metrics:</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Joining all column names with '+' except 'Win', 'Date', and 'Opponent'</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>formula <span class="op">=</span> <span class="st">'Win ~ '</span> <span class="op">+</span> <span class="st">' + '</span>.join(df.columns.drop(<span class="st">'Win'</span>))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Fitting the logistic regression model using smf.logit</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>logit_model <span class="op">=</span> smf.logit(formula<span class="op">=</span>formula, data<span class="op">=</span>df).fit()</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Displaying the summary of the model</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>logit_model_summary <span class="op">=</span> logit_model.summary()</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(logit_model_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimization terminated successfully.
+         Current function value: 0.576667
+         Iterations 6
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:                    Win   No. Observations:                  110
+Model:                          Logit   Df Residuals:                       87
+Method:                           MLE   Df Model:                           22
+Date:                Mon, 11 Dec 2023   Pseudo R-squ.:                  0.1608
+Time:                        13:38:22   Log-Likelihood:                -63.433
+converged:                       True   LL-Null:                       -75.590
+Covariance Type:            nonrobust   LLR p-value:                    0.3310
+=================================================================================================
+                                    coef    std err          z      P&gt;|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------
+Intercept                        -3.8386      1.679     -2.286      0.022      -7.130      -0.547
+Home                              0.4161      0.487      0.854      0.393      -0.539       1.372
+Team_Score_On_PP                 -0.6707      0.734     -0.914      0.361      -2.110       0.768
+Team_PP_Faceoffs_won_percent      0.0320      0.014      2.363      0.018       0.005       0.058
+Team_Shots_at_Net                 0.4058      0.209      1.945      0.052      -0.003       0.815
+Team_Goals_at_Net                 0.4165      0.588      0.708      0.479      -0.736       1.569
+Team_Shots_OT_Left_Close          0.5352      0.400      1.338      0.181      -0.249       1.319
+Team_Shots_Left_Close            -0.2931      0.323     -0.908      0.364      -0.926       0.340
+Team_Goals_Left_Close             1.3515      1.635      0.827      0.408      -1.853       4.556
+Team_Shots_OT_Center_Close       -0.0171      0.328     -0.052      0.958      -0.660       0.626
+Team_Shots_Center_Close          -0.2185      0.206     -1.063      0.288      -0.621       0.184
+Team_Goals_Center_Close           1.0175      0.741      1.373      0.170      -0.435       2.470
+Team_Shots_OT_Right_Close         0.4856      0.408      1.192      0.233      -0.313       1.284
+Team_Shots_Right_Close           -0.1238      0.341     -0.363      0.717      -0.792       0.545
+Team_Shots_OT_Left_Far           -0.0198      0.638     -0.031      0.975      -1.271       1.231
+Team_Shots_Left_Far               0.2053      0.417      0.493      0.622      -0.612       1.022
+Team_Shots_OT_Center_Far          0.0941      0.353      0.266      0.790      -0.598       0.786
+Team_Shots_Center_Far            -0.2046      0.189     -1.085      0.278      -0.574       0.165
+Team_Shots_OT_Right_Far           0.2789      0.629      0.443      0.658      -0.955       1.513
+Team_Shots_Right_Far             -0.3100      0.429     -0.722      0.470      -1.151       0.531
+Team_PP_OZ_possession_percent     0.0385      0.019      2.060      0.039       0.002       0.075
+Team_PP_NZ_possession_percent    -0.1078      0.071     -1.512      0.131      -0.248       0.032
+Team_PP_DZ_possession_percent     0.0662      0.053      1.259      0.208      -0.037       0.169
+=================================================================================================</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve, auc</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> logit_model.predict(df)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>fpr, tpr, thresholds <span class="op">=</span> roc_curve(df[<span class="st">'Win'</span>], predictions)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>roc_auc <span class="op">=</span> auc(fpr, tpr)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>plt.plot(fpr, tpr, color<span class="op">=</span><span class="st">'darkorange'</span>, lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'ROC curve (area = </span><span class="sc">%0.2f</span><span class="st">)'</span> <span class="op">%</span> roc_auc)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>plt.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">'navy'</span>, lw<span class="op">=</span><span class="dv">2</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'False Positive Rate'</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'True Positive Rate'</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Receiver Operating Characteristic'</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="presentation_write_up_files/figure-html/cell-11-output-1.png" width="589" height="449"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert probabilities to 0/1 predictions based on a chosen threshold (e.g., 0.5)</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>pred_labels <span class="op">=</span> predictions <span class="op">&gt;</span> <span class="fl">0.5</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(df[<span class="st">'Win'</span>], pred_labels)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>sns.heatmap(cm, annot<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Predicted'</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'True'</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="presentation_write_up_files/figure-html/cell-12-output-1.png" width="547" height="429"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Assuming logit_model is your fitted logistic regression model</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># And X_test is your test features dataset</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>predicted_probabilities <span class="op">=</span> logit_model.predict(X)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>predicted_labels <span class="op">=</span> np.where(predicted_probabilities <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)  <span class="co"># Using 0.5 as the threshold</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> precision_score, recall_score, f1_score, accuracy_score</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>precision <span class="op">=</span> precision_score(df[<span class="st">'Win'</span>], predicted_labels)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>recall <span class="op">=</span> recall_score(df[<span class="st">'Win'</span>], predicted_labels)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> f1_score(df[<span class="st">'Win'</span>], predicted_labels)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">=</span> accuracy_score(df[<span class="st">'Win'</span>], predicted_labels)</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Precision: </span><span class="sc">{</span>precision<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Recall: </span><span class="sc">{</span>recall<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"F1-Score: </span><span class="sc">{</span>f1<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Accuracy: </span><span class="sc">{</span>accuracy<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Precision: 0.7121212121212122
+Recall: 0.7704918032786885
+F1-Score: 0.7401574803149605
+Accuracy: 0.7</code></pre>
+</div>
+</div>
+</section>
+<section id="analysis-of-results" class="level2">
+<h2 class="anchored" data-anchor-id="analysis-of-results">Analysis of Results</h2>
+<p>Now we can comment on the results:</p>
+<p>Intercept: The model’s intercept is significant, indicating that even when all predictor variables are at zero, the log odds of winning vs.&nbsp;losing are significantly different from zero.</p>
+<p>Home (p = 0.393): This variable is not statistically significant, suggesting that playing at home does not significantly impact the likelihood of winning in this model.</p>
+<p>Team_Score_On_PP (p = 0.361): Scoring on the power play is not a significant predictor of winning games, according to the model. This might seem counterintuitive, but it could indicate that other aspects of power play performance are more critical.</p>
+<p>Team_PP_Faceoffs_won_percent (p = 0.018): This variable is significant, showing that winning a higher percentage of faceoffs during power plays is positively correlated with winning games.</p>
+<p>Team_Shots_at_Net (p = 0.052): Though borderline, this variable is not statistically significant at the 0.05 level. It suggests that the number of shots at the net during power plays doesn’t have a statistically significant effect on winning games.</p>
+<p>Team_Goals_at_Net (p = 0.479): The number of goals scored at the net during power plays is not a significant predictor of winning games.</p>
+<p>Team_Shots_OT_Left_Close (p = 0.181): Shots on target from the left close range are not a significant predictor of winning.</p>
+<p>Team_Shots_Left_Close (p = 0.364): Similarly, the total number of shots from the left close range does not significantly impact the likelihood of winning.</p>
+<p>Team_Goals_Left_Close (p = 0.408): The number of goals scored from the left close range is not a significant predictor.</p>
+<p>Team_Shots_OT_Center_Close (p = 0.958): Shots on target from the center close range do not significantly impact winning chances.</p>
+<p>Team_Shots_Center_Close (p = 0.288): The total number of shots from the center close range is not a significant predictor.</p>
+<p>Team_Goals_Center_Close (p = 0.170): Goals scored from the center close range also do not significantly affect the chances of winning.</p>
+<p>Team_Shots_OT_Right_Close (p = 0.233): Shots on target from the right close range are not a significant predictor.</p>
+<p>Team_Shots_Right_Close (p = 0.717): The total number of shots from the right close range does not significantly influence game outcomes.</p>
+<p>Team_Shots_OT_Left_Far (p = 0.975): Shots on target from the left far range are not a significant predictor.</p>
+<p>Team_Shots_Left_Far (p = 0.622): The total number of shots from the left far range does not significantly impact the likelihood of winning.</p>
+<p>Team_Shots_OT_Center_Far (p = 0.790): Shots on target from the center far range are not significant predictors of winning games.</p>
+<p>Team_Shots_Center_Far (p = 0.278): The total number of shots from the center far range is not a significant predictor.</p>
+<p>Team_Shots_OT_Right_Far (p = 0.658): Shots on target from the right far range do not significantly impact winning chances.</p>
+<p>Team_Shots_Right_Far (p = 0.470): The total number of shots from the right far range is not a significant predictor.</p>
+<p>Team_PP_OZ_possession_percent (p = 0.039): The percentage of time possessing the puck in the offensive zone during power plays is significant, suggesting a positive impact on winning games.</p>
+<p>Team_PP_NZ_possession_percent (p = 0.131): Possession in the neutral zone during power plays is not a significant predictor of winning.</p>
+<p>Team_PP_DZ_possession_percent (p = 0.208): Similarly, possession in the defensive zone during power plays does not significantly influence game outcomes.</p>
+<p>In summary, the most significant factors at the 0.05 alpha level are winning faceoffs during power plays and maintaining possession in the offensive zone. Many of the shot-related variables, both in terms of attempts and goals, did not emerge as significant predictors in this model. This analysis provides a nuanced understanding of what aspects of power play performance are most crucial to game outcomes for the UConn Men’s Hockey Team.</p>
+<p>Additionally, the model’s ROC curve area of 0.76 suggests a good discriminatory ability between winning and losing outcomes. Also, Precision, Recall, and F1-Score values (0.71, 0.77, and 0.74 respectively) indicate a balanced and effective model in predicting game outcomes.</p>
+</section>
+<section id="discussion-conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion-conclusion">Discussion &amp; Conclusion</h2>
+<section id="discussion" class="level3">
+<h3 class="anchored" data-anchor-id="discussion">Discussion</h3>
+<section id="interpretation-of-key-findings" class="level4">
+<h4 class="anchored" data-anchor-id="interpretation-of-key-findings">Interpretation of Key Findings</h4>
+<p>Our logistic regression analysis reveals intriguing insights into the dynamics of power play performance and their impact on game outcomes for the UConn Men’s Hockey Team. The significance of certain variables over others provides a nuanced understanding of strategic elements in hockey.</p>
+<ol type="1">
+<li><strong>Significance of Faceoffs (Team_PP_Faceoffs_won_percent)</strong>:
+<ul>
+<li>The statistical significance of faceoff wins during power plays underscores the tactical advantage of gaining initial control of the puck. Winning faceoffs sets the tone for the subsequent play, allowing for immediate offensive pressure and potentially disorganizing the opponent’s defense.</li>
+</ul></li>
+<li><strong>Offensive Zone Possession (Team_PP_OZ_possession_percent)</strong>:
+<ul>
+<li>The positive correlation between offensive zone possession during power plays and winning outcomes suggests the importance of sustained offensive pressure. It highlights the need for effective puck handling and strategic positioning to maintain control in the offensive zone.</li>
+</ul></li>
+<li><strong>Non-significance of Shot and Goal Metrics</strong>:
+<ul>
+<li>Interestingly, most variables related to shots and goals, whether from close or far ranges, did not significantly predict winning outcomes. This might indicate that the sheer number of shots or goals during power plays isn’t as crucial as the quality and strategic execution of these shots. It also suggests that other factors, like defensive strategies or goaltending, play a significant role in determining the success of power plays.</li>
+</ul></li>
+<li><strong>Home Advantage (Home)</strong>:
+<ul>
+<li>The lack of statistical significance for the ‘Home’ variable suggests that the home-ice advantage, often considered an influential factor in sports, may not be as impactful in determining the outcomes of the games within the scope of this analysis. This could be due to a well-adapted team performance irrespective of the venue or other balancing factors like travel fatigue not being captured in the model.</li>
+</ul></li>
+</ol>
+</section>
+<section id="limitations" class="level4">
+<h4 class="anchored" data-anchor-id="limitations">Limitations</h4>
+<p>While our analysis provides valuable insights, it is crucial to acknowledge its limitations:</p>
+<ul>
+<li><strong>Data Scope</strong>: Our analysis is confined to three seasons of data. Longer-term trends or changes in team composition and strategy over time are not captured.</li>
+<li><strong>Unmeasured Factors</strong>: Intangible elements like team morale, player injuries, psychological factors, and the quality of opposition strategies are not quantified in our dataset but can significantly influence game outcomes.</li>
+<li><strong>Model Constraints</strong>: The logistic regression model, while robust, may not capture the complex interactions and non-linear relationships that can exist in sports data.</li>
+</ul>
+</section>
+<section id="recommendations" class="level4">
+<h4 class="anchored" data-anchor-id="recommendations">Recommendations</h4>
+<p>Based on our findings, we recommend:</p>
+<ol type="1">
+<li><strong>Strategic Emphasis on Faceoffs and Offensive Zone Control</strong>: Coaches and players should focus on strategies and training drills that enhance faceoff success and control in the offensive zone.</li>
+<li><strong>Quality Over Quantity in Shot Taking</strong>: Rethink the approach to shooting, emphasizing strategic and well-positioned shots over mere volume. Location of shot attempts are not likely to be as significant of a factor as the quality of the shot.</li>
+</ol>
+</section>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>Our logistic regression analysis has shed light on the complex interplay of factors that contribute to successful outcomes in hockey, particularly during power plays. The significant role of faceoff wins and offensive zone possession during power plays emerged as key strategic elements. Contrary to conventional wisdom, the number of shots or goals during power plays was not predictive of winning outcomes, suggesting a need to focus on the quality and execution of offensive strategies.</p>
+<p>This analysis serves as a foundational piece for the UConn Men’s Hockey Team in formulating data-driven strategies. It encourages a nuanced approach to understanding the multifaceted nature of hockey and the variables that influence game outcomes. Future analyses could expand on this work by incorporating a broader dataset, considering additional variables, and employing more complex statistical models to capture the dynamic nature of the sport.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
