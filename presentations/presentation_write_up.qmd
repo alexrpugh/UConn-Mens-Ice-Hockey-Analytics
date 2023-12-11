@@ -86,7 +86,7 @@ import statsmodels.api as sm
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv('/Users/giovanni-lunetta/uconn_masters/hockey/final_data.csv', low_memory=False)
+df = pd.read_csv('/Users/giovanni-lunetta/uconn_masters/hockey/hockey_repo/data/final_data.csv', low_memory=False)
 
 
 pd.set_option('display.max_columns', None)
